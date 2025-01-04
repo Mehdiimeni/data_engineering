@@ -1,9 +1,8 @@
 from faker import Faker
 import random
 import mysql.connector
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# اتصال به دیتابیس
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
@@ -14,9 +13,8 @@ cursor = conn.cursor()
 
 fake = Faker()
 
-
 products = []
-for i in range(1, 11):
+for i in range(1, 100):
     product = {
         'id': i,
         'title': fake.word(),
@@ -24,12 +22,11 @@ for i in range(1, 11):
     }
     products.append(product)
     cursor.execute("INSERT INTO Products (id, title, created_at) VALUES (%s, %s, %s)",
-                   (product['id'], product['title'], product['created_at']))
+                   (product['id'], product['title'],  product['created_at']))
 conn.commit()
 
-
 orders = []
-for i in range(1, 6):
+for i in range(1, 60):
     order = {
         'id': i,
         'total_price': random.uniform(50, 500),
@@ -42,7 +39,7 @@ conn.commit()
 
 for order in orders:
     order_id = order['id']
-    for _ in range(random.randint(1, 3)): 
+    for _ in range(random.randint(1, 6)):
         product = random.choice(products)
         quantity = random.randint(1, 5)
         cursor.execute("INSERT INTO OrderProducts (order_id, product_id, quantity, created_at) VALUES (%s, %s, %s, %s)",
