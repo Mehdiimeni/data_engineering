@@ -1,26 +1,32 @@
 version: '3.8'
+
 services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: "" 
-      MYSQL_DATABASE: data_engineering 
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: data_engineering
+      MYSQL_USER: root
     ports:
-      - "3306:3306" 
+      - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql 
+      - mysql_data:/var/lib/mysql
 
   data_generator:
     build:
       context: ./data_generator
     depends_on:
       - db
+    ports:
+      - "8000:8000"
 
   pyspark_app:
     build:
       context: ./pyspark_app
     depends_on:
       - db
+    ports:
+      - "9000:9000"
 
 volumes:
   mysql_data: {}
