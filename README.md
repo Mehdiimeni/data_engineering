@@ -16,8 +16,6 @@ This project demonstrates a data engineering pipeline using MySQL, Python (with 
 +db
     - eer.mwb               # EER diagram for database schema
 
-+libs
-    - mysql-connector-j-9.1.0.jar  # MySQL JDBC connector for PySpark
 
 +pyspark_app
     - config.yaml           # Configuration file for PySpark
@@ -57,8 +55,7 @@ README.md                  # Project documentation
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/Mehdiimeni/data_engineering
    ```
 
 2. Build and start all services:
