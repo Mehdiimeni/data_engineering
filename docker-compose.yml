@@ -1,32 +1,55 @@
-version: '3.8'
-
 services:
-  db:
+  mysql:
     image: mysql:8.0
+    container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_DATABASE: data_engineering
-      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - data_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--host=localhost", "--user=root", "--password=${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
+      start_period: 10s
 
   data_generator:
     build:
       context: ./data_generator
+      dockerfile: Dockerfile
+    container_name: data_generator
+    environment:
+      DATA_GENERATOR_PORT: ${DATA_GENERATOR_PORT}
     depends_on:
-      - db
+      - mysql
+    networks:
+      - data_network
     ports:
-      - "8000:8000"
+      - "${DATA_GENERATOR_PORT}:${DATA_GENERATOR_PORT}"
 
   pyspark_app:
     build:
       context: ./pyspark_app
+      dockerfile: Dockerfile
+    container_name: pyspark_app
+    environment:
+      PYSPARK_APP_PORT: ${PYSPARK_APP_PORT}
     depends_on:
-      - db
+      - mysql
+    networks:
+      - data_network
     ports:
-      - "9000:9000"
+      - "${PYSPARK_APP_PORT}:${PYSPARK_APP_PORT}"
 
 volumes:
-  mysql_data: {}
+  mysql_data:
+
+networks:
+  data_network:
+    driver: bridge
